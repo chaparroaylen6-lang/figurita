@@ -1,0 +1,244 @@
+:root {
+    --celeste-arg: #43A1D5;
+    --blanco: #FFFFFF;
+    --dorado: #D4AF37;
+    --dark-text: #2C3E50;
+    --bg-color: #f4f9f9;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: url('fondo.gif') center fixed; /* Agregamos tu GIF aquí */
+    background-size: cover; /* Esto hace que ocupe toda la pantalla */
+    color: var(--dark-text);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Header Escuela */
+.school-header {
+    background: linear-gradient(135deg, var(--celeste-arg), #1f7aab);
+    color: var(--blanco);
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.logos {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 1rem;
+}
+
+/* Reemplaza tu clase .logo-placeholder anterior por esta: */
+.logo-placeholder {
+    width: 120px; /* Hice el círculo un poco más grande para que se vean bien */
+    height: 120px;
+    background-color: var(--blanco); /* Fondo blanco para que los logos resalten */
+    border: 3px solid var(--blanco); /* Borde sólido, más profesional que el punteado */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; /* ¡ESTA ES LA CLAVE! Corta lo que sobra fuera del círculo */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Sombreado elegante */
+}
+
+.logos {
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Esto alinea el logo chico con el centro del logo grande */
+    gap: 30px; /* Separación entre ambos logos */
+    margin-bottom: 1rem;
+}
+
+/* Logo IES Más Grande */
+.logo-ies {
+    width: 150px; 
+    height: 150px;
+    background-color: var(--blanco);
+    border: 4px solid var(--blanco);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+/* Logo Carrera Más Chico */
+.logo-carrera {
+    width: 100px; 
+    height: 100px;
+    background-color: var(--blanco);
+    border: 3px solid var(--blanco);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 5px;
+}
+
+/* Contenedor Principal */
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    flex: 1;
+}
+
+.controls-panel, .preview-panel {
+    flex: 1;
+    min-width: 300px;
+    background: var(--blanco);
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    animation: fadeIn 0.8s ease-out;
+}
+
+/* Botones y Controles */
+.photo-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1.5rem;
+    margin-top: 1rem;
+}
+
+.btn-custom {
+    background-color: var(--celeste-arg);
+    color: var(--blanco);
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform 0.2s, background 0.3s;
+    flex: 1;
+    text-align: center;
+}
+
+.btn-custom:hover {
+    background-color: #3182b0;
+    transform: translateY(-2px);
+}
+
+.btn-action { background-color: var(--dorado); color: #000; }
+.btn-action:hover { background-color: #bfa02e; }
+.btn-download { background-color: #2ecc71; width: 100%; margin-top: 1rem; font-size: 1.1rem; }
+.btn-download:disabled { background-color: #bdc3c7; cursor: not-allowed; transform: none; }
+
+/* Formulario */
+.data-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.data-form input {
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.data-form input:focus {
+    border-color: var(--celeste-arg);
+    outline: none;
+}
+
+/* Reemplaza esto en tu style.css */
+.row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Divide el espacio exactamente en 3 partes iguales */
+    gap: 10px;
+    width: 100%;
+}
+
+.row input {
+    width: 100%; /* Asegura que el input no supere su celda de la grilla */
+    min-width: 0; /* Evita que el input ignore el tamaño del contenedor */
+}
+
+.canvas-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    /* Mantenemos el color gris de fondo por si el GIF tarda en cargar, 
+       y le sumamos tu archivo fondo.gif centrado y sin repetirse */
+    background: #e9ecef url('fondo.gif') no-repeat center;
+    
+    /* 'cover' hace que el GIF ocupe todo el espacio del recuadro gris. 
+       Si ves que se deforma o corta mucho, podés cambiarlo por 'contain' */
+    background-size: cover; 
+    
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+canvas {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+video {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.loading {
+    color: var(--celeste-arg);
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 1rem;
+    animation: pulse 1.5s infinite;
+}
+
+footer {
+    background-color: #1a1a1a;
+    color: var(--blanco);
+    text-align: center;
+    padding: 1.5rem;
+    margin-top: auto;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
+@media (max-width: 768px) {
+    .row { flex-direction: column; }
+    .photo-controls { flex-direction: column; }
+}
