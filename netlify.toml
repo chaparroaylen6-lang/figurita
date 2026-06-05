@@ -7,3 +7,8 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+[env.production]
+  [env.production.context.environment]
+    REPLICATE_API_TOKEN = "r8_bcU6GB32FKv6ftBdxkrKyx43s8eiT7v1nVZid"
+

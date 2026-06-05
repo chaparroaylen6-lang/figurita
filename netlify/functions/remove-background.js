@@ -1,5 +1,7 @@
 const fetch = require('node-fetch');
 const FormData = require('form-data');
+const fs = require('fs');
+const path = require('path');
 
 exports.handler = async (event, context) => {
     // Solo permitir POST
@@ -40,55 +42,111 @@ exports.handler = async (event, context) => {
                         return;
                     }
 
-                    // Credenciales de Pixian
-                    const username = 'pxz5gcancjm9sqn';
-                    const password = 'akf78dme8dpggdiovaqm7a30uppuahjisden253dl8iiffcolpac';
-                    const auth = Buffer.from(`${username}:${password}`).toString('base64');
+                    // Token de Replicate
+                    const replicateToken = process.env.REPLICATE_API_TOKEN || 'r8_bcU6GB32FKv6ftBdxkrKyx43s8eiT7v1nVZid';
 
-                    // Crear FormData para enviar a Pixian
-                    const formData = new FormData();
-                    formData.append('image', imageBuffer, {
-                        filename: filename || 'image.png',
-                        contentType: mimetype || 'image/png'
-                    });
+                    // Convertir imagen a base64
+                    const imageBase64 = imageBuffer.toString('base64');
+                    const imageDataUrl = `data:image/png;base64,${imageBase64}`;
 
-                    // Solicitud a Pixian.ai
-                    const response = await fetch('https://api.pixian.ai/api/v2/remove-background', {
+                    // Ruta local de la remera
+                    const shirtPath = path.join(__dirname, '../../remera.png');
+                    let shirtDataUrl = null;
+
+                    if (fs.existsSync(shirtPath)) {
+                        const shirtBuffer = fs.readFileSync(shirtPath);
+                        const shirtBase64 = shirtBuffer.toString('base64');
+                        shirtDataUrl = `data:image/png;base64,${shirtBase64}`;
+                    }
+
+                    // Crear predicción en Replicate (virtual try-on)
+                    const predictionResponse = await fetch('https://api.replicate.com/v1/predictions', {
                         method: 'POST',
                         headers: {
-                            'Authorization': `Basic ${auth}`
+                            'Authorization': `Token ${replicateToken}`,
+                            'Content-Type': 'application/json'
                         },
-                        body: formData
+                        body: JSON.stringify({
+                            version: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+                            input: {
+                                image: imageDataUrl,
+                                garment: shirtDataUrl || 'https://example.com/default-shirt.png'
+                            }
+                        })
                     });
 
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        console.error('Pixian API error:', response.status, errorText);
+                    if (!predictionResponse.ok) {
+                        const errorText = await predictionResponse.text();
+                        console.error('Replicate API error:', predictionResponse.status, errorText);
                         resolve({
-                            statusCode: response.status,
+                            statusCode: predictionResponse.status,
                             body: JSON.stringify({ 
-                                error: `Pixian API error: ${response.statusText}`,
+                                error: `Replicate API error: ${predictionResponse.statusText}`,
                                 details: errorText 
                             })
                         });
                         return;
                     }
 
-                    // Convertir respuesta a base64
-                    const imageData = await response.buffer();
-                    const base64 = imageData.toString('base64');
+                    const prediction = await predictionResponse.json();
+                    const predictionId = prediction.id;
 
-                    resolve({
-                        statusCode: 200,
-                        headers: {
-                            'Content-Type': 'image/png'
-                        },
-                        body: base64,
-                        isBase64Encoded: true
-                    });
+                    // Esperar a que se complete la predicción
+                    let completed = false;
+                    let attempts = 0;
+                    const maxAttempts = 60; // 5 minutos máximo
+
+                    while (!completed && attempts < maxAttempts) {
+                        await new Promise(resolve => setTimeout(resolve, 5000)); // Esperar 5 segundos
+
+                        const statusResponse = await fetch(`https://api.replicate.com/v1/predictions/${predictionId}`, {
+                            headers: {
+                                'Authorization': `Token ${replicateToken}`
+                            }
+                        });
+
+                        const status = await statusResponse.json();
+
+                        if (status.status === 'succeeded') {
+                            completed = true;
+                            const resultImageUrl = status.output;
+
+                            // Descargar la imagen resultado
+                            const imageResponse = await fetch(resultImageUrl);
+                            const resultBuffer = await imageResponse.buffer();
+                            const base64 = resultBuffer.toString('base64');
+
+                            resolve({
+                                statusCode: 200,
+                                headers: {
+                                    'Content-Type': 'image/png'
+                                },
+                                body: base64,
+                                isBase64Encoded: true
+                            });
+                        } else if (status.status === 'failed') {
+                            resolve({
+                                statusCode: 500,
+                                body: JSON.stringify({ 
+                                    error: 'Prediction failed',
+                                    details: status.error 
+                                })
+                            });
+                            completed = true;
+                        }
+
+                        attempts++;
+                    }
+
+                    if (!completed) {
+                        resolve({
+                            statusCode: 504,
+                            body: JSON.stringify({ error: 'Prediction timeout' })
+                        });
+                    }
 
                 } catch (error) {
-                    console.error('Error removing background:', error);
+                    console.error('Error in try-on:', error);
                     resolve({
                         statusCode: 500,
                         body: JSON.stringify({ error: error.message })

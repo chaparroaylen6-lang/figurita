@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.readAsDataURL(blob);
     }
 
-    // --- NUEVO PROCESAMIENTO CON PIXIAN API ---
+    // --- NUEVO PROCESAMIENTO CON REPLICATE API ---
     async function processImageBlob(blobFile, fallbackUrl) {
         loadingMsg.textContent = "🤖 Comprimiendo imagen...";
         loadingMsg.style.display = 'block';
@@ -121,15 +121,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Comprimir imagen primero
         comprimirImagen(blobFile, async (imagenComprimida) => {
-            loadingMsg.textContent = "🤖 Enviando a la nube para recortar fondo...";
+            loadingMsg.textContent = "👕 Aplicando remera de la Selección...";
             
             // Llamamos a la función con la imagen comprimida
-            const urlSinFondo = await quitarFondoConPixian(imagenComprimida);
+            const urlConRemera = await quitarFondoConPixian(imagenComprimida);
 
-            if (urlSinFondo) {
-                // Si la API funcionó, usamos la imagen devuelta
+            if (urlConRemera) {
+                // Si la API funcionó, usamos la imagen con remera
                 userPhoto = new Image();
-                userPhoto.src = urlSinFondo;
+                userPhoto.src = urlConRemera;
                 userPhoto.onload = () => {
                     loadingMsg.style.display = 'none';
                     downloadBtn.disabled = false;
