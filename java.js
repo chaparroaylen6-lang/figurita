@@ -84,34 +84,68 @@ document.addEventListener('DOMContentLoaded', () => {
             return null;
         }
     }
+    // --- COMPRIMIR IMAGEN ANTES DE ENVIAR ---
+    function comprimirImagen(blob, callback) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                
+                // Reducir tamaño si es muy grande
+                if (width > 1200 || height > 1200) {
+                    const ratio = Math.min(1200 / width, 1200 / height);
+                    width *= ratio;
+                    height *= ratio;
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                
+                // Convertir a blob comprimido (JPEG con 85% calidad)
+                canvas.toBlob(callback, 'image/jpeg', 0.85);
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(blob);
+    }
+
     // --- NUEVO PROCESAMIENTO CON PIXIAN API ---
     async function processImageBlob(blobFile, fallbackUrl) {
-        loadingMsg.textContent = "🤖 Enviando a la nube para recortar fondo...";
+        loadingMsg.textContent = "🤖 Comprimiendo imagen...";
         loadingMsg.style.display = 'block';
         downloadBtn.disabled = true;
 
-        // Llamamos a la función que armamos arriba
-        const urlSinFondo = await quitarFondoConPixian(blobFile);
+        // Comprimir imagen primero
+        comprimirImagen(blobFile, async (imagenComprimida) => {
+            loadingMsg.textContent = "🤖 Enviando a la nube para recortar fondo...";
+            
+            // Llamamos a la función con la imagen comprimida
+            const urlSinFondo = await quitarFondoConPixian(imagenComprimida);
 
-        if (urlSinFondo) {
-            // Si la API funcionó, usamos la imagen devuelta
-            userPhoto = new Image();
-            userPhoto.src = urlSinFondo;
-            userPhoto.onload = () => {
-                loadingMsg.style.display = 'none';
-                downloadBtn.disabled = false;
-                drawCanvas(); // Dibujamos la figurita
-            };
-        } else {
-            // Si la API falla, usamos la foto original con fondo
-            userPhoto = new Image();
-            userPhoto.src = fallbackUrl;
-            userPhoto.onload = () => {
-                loadingMsg.style.display = 'none';
-                downloadBtn.disabled = false;
-                drawCanvas();
-            };
-        }
+            if (urlSinFondo) {
+                // Si la API funcionó, usamos la imagen devuelta
+                userPhoto = new Image();
+                userPhoto.src = urlSinFondo;
+                userPhoto.onload = () => {
+                    loadingMsg.style.display = 'none';
+                    downloadBtn.disabled = false;
+                    drawCanvas(); // Dibujamos la figurita
+                };
+            } else {
+                // Si la API falla, usamos la foto original con fondo
+                userPhoto = new Image();
+                userPhoto.src = fallbackUrl;
+                userPhoto.onload = () => {
+                    loadingMsg.style.display = 'none';
+                    downloadBtn.disabled = false;
+                    drawCanvas();
+                };
+            }
+        });
     }
 
  // --- Dibujar Canvas ---
