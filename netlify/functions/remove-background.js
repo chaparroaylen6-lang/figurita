@@ -42,8 +42,15 @@ exports.handler = async (event, context) => {
                         return;
                     }
 
-                    // Token de Replicate
-                    const replicateToken = process.env.REPLICATE_API_TOKEN || 'r8_bcU6GB32FKv6ftBdxkrKyx43s8eiT7v1nVZid';
+                    // Token de Replicate (desde variables de entorno de Netlify)
+                    const replicateToken = process.env.REPLICATE_API_TOKEN;
+                    if (!replicateToken) {
+                        resolve({
+                            statusCode: 500,
+                            body: JSON.stringify({ error: 'REPLICATE_API_TOKEN no configurado en Netlify' })
+                        });
+                        return;
+                    }
 
                     // Convertir imagen a base64
                     const imageBase64 = imageBuffer.toString('base64');
