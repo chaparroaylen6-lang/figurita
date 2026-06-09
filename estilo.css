@@ -80,7 +80,10 @@
     animation: cargar 2s ease-in-out forwards;
 }
 
-
+html, body {
+    max-width: 100vw; /* El ancho máximo es el 100% de la pantalla, ni un pixel más */
+    overflow-x: hidden; /* Corta cualquier cosa que intente salirse por los costados */
+}
 
 /* Ocultar la pantalla de carga (esto lo usarás desde tu JS) */
 .ocultar-carga {
@@ -487,6 +490,8 @@ footer {
     justify-content: center;
     gap: 20px;
     margin-bottom: 1.5rem;
+    flex-wrap: wrap; /* Si los botones no entran, se ponen uno arriba del otro */
+    gap: 10px;
 }
 
 .book-btn {

@@ -190,21 +190,24 @@ function inicializarLibro() {
     // Inyectar tapas con IMÁGENES
     flipbook.innerHTML = `
         <div class="hard cover" style="background-image: url('imagenes/tapa.png'); background-size: cover; background-position: center; border-radius: 0 10px 10px 0; border: none;">
-            </div>
-        
+        </div>
         
         ${htmlPaginas}
-        
         
         <div class="hard cover" style="background-image: url('imagenes/contratapa.png'); background-size: cover; background-position: center; border-radius: 10px 0 0 10px; border: none;">
         </div>
     `;
 
-    // Iniciar librería Turn.js
+    // --- CÁLCULO INTELIGENTE DE TAMAÑO ---
     let esCelular = window.innerWidth <= 768;
+    let anchoLibro = esCelular ? window.innerWidth * 0.9 : 800;
+    // En PC una hoja mide 400x550 (proporción de 1.375). Usamos esa matemática para el celu:
+    let altoLibro = esCelular ? anchoLibro * 1.375 : 550; 
+
+    // Iniciar librería Turn.js
     $(flipbook).turn({
-        width: esCelular ? window.innerWidth * 0.9 : 800,
-        height: 550,
+        width: anchoLibro,
+        height: altoLibro,
         autoCenter: false,  
         display: esCelular ? 'single' : 'double',
         elevation: 50,
@@ -245,32 +248,16 @@ function inicializarLibro() {
     $(flipbook).bind('turning', function(event, page, view) {
         const totalPags = $(this).turn('pages');
 
-        // 1. Apagar/Prender botones
         if (page === 1) btnPrev.classList.add('btn-disabled');
         else btnPrev.classList.remove('btn-disabled');
 
         if (page === totalPags) btnNext.classList.add('btn-disabled');
         else btnNext.classList.remove('btn-disabled');
 
-        // 2. Animación de desplazamiento
         ajustarDesplazamiento(page);
     });
 
-    // --- ¡NUEVO!: OPTIMIZACIÓN RESPONSIVE DINÁMICA ---
-    // Detecta cuando giran el celu o cambian el tamaño de pantalla
-    window.addEventListener('resize', () => {
-        esCelular = window.innerWidth <= 768;
-        const nuevoAncho = esCelular ? window.innerWidth * 0.9 : 800;
-        
-        // Forzamos a Turn.js a redimensionar el libro y cambiar el modo de vista
-        $(flipbook).turn('size', nuevoAncho, 550);
-        $(flipbook).turn('display', esCelular ? 'single' : 'double');
-        
-        // Corregimos la posición del libro en pantalla
-        const paginaActual = $(flipbook).turn('page');
-        ajustarDesplazamiento(paginaActual);
-    });
-
+    // ¡ESTO FALTABA! Los clics de los botones de avanzar y retroceder
     btnPrev.addEventListener('click', () => {
         if (!btnPrev.classList.contains('btn-disabled')) {
             $('#flipbook').turn('previous');
@@ -282,6 +269,19 @@ function inicializarLibro() {
             $('#flipbook').turn('next');
         }
     });
+
+    // --- OPTIMIZACIÓN RESPONSIVE DINÁMICA ---
+    window.addEventListener('resize', () => {
+        esCelular = window.innerWidth <= 768;
+        const nuevoAncho = esCelular ? window.innerWidth * 0.9 : 800;
+        const nuevoAlto = esCelular ? nuevoAncho * 1.375 : 550; // Mantenemos proporción al redimensionar
+        
+        $(flipbook).turn('size', nuevoAncho, nuevoAlto);
+        $(flipbook).turn('display', esCelular ? 'single' : 'double');
+        
+        const paginaActual = $(flipbook).turn('page');
+        ajustarDesplazamiento(paginaActual);
+    });
 }
 // --- 6. Evento Principal de Carga ---
 document.addEventListener("DOMContentLoaded", () => {
@@ -290,4 +290,4 @@ document.addEventListener("DOMContentLoaded", () => {
     
     inicializarLibro();
     mostrarAlbum();
-});
+})
