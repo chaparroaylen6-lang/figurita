@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu Album</title>
+    <link rel="stylesheet" href="estilo.css">
+    <link rel="icon" type="image/x-icon" href="https://upload.wikimedia.org/wikipedia/commons/a/a4/Sol_de_Mayo_Bandera_Argentina.png">
+   
+</head>
+
+<body>
+    <header class="school-header">
+    <div class="logos">
+        <div class="logo-ies">
+            <img src="https://ies7venadotuerto.edu.ar/wp-content/uploads/2019/09/logo.png" alt="Logo IES" class="logo-img">
+        </div>
+        <div class="logo-carrera">
+            <img src="https://media-eze1-1.cdn.whatsapp.net/v/t61.24694-24/534419706_955235030178583_6412941059776622736_n.jpg?ccb=11-4&oh=01_Q5Aa4wELikqXu9hJtlV2_JwtJidvSYeO1GL7CcXsljSMioj7dg&oe=6A305967&_nc_sid=5e03e0&_nc_cat=107" alt="Logo Carrera" class="logo-img">
+        </div>
+    </div>
+     <div class="album-header">
+                <h1> Álbum Devs & Lenguajes</h1>
+                <p>Coleccioná los cromos clave del software. ¡3 por día!</p>
+                <button class="btn-custom btn-action" id="btnAbrirPaquete">
+                    Abrir Paquete Diario!
+                </button>
+            </div>
+</header>
+<main class="container">
+        <section class="album-panel">
+
+            <div class="book-controls">
+                <button id="btnPrev" class="btn-pildora book-btn">⬅️ Anterior</button>
+                <button id="btnNext" class="btn-pildora book-btn">Siguiente ➡️</button>
+            </div>
+
+            <div class="book-container">
+                <div id="flipbook"></div>
+            </div>
+
+        </section>
+    </main>
+<button class="btn-pildora" id="btnVolver" onclick="window.location.href='index.html'">volver a la página principal</button>
+<div id="modalPaquete" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closePaquete">&times;</span>
+            <h2 id="tituloPaquete">¡Paquete Abierto!</h2>
+            <p id="textoPaquete">Has conseguido estas figuritas:</p>
+            <div id="cartasGanadas" class="cartas-ganadas-container"></div>
+        </div>
+    </div>
+
+    <div id="modalDetalle" class="modal">
+        <div class="modal-content detalle-content">
+            <span class="close-btn" id="closeDetalle">&times;</span>
+            <img id="imgDetalle" src="" alt="Figurita">
+            <h3 id="nombreDetalle"></h3>
+        </div>
+    </div>
+<footer>
+        <p>© 2026 - Proyecto Escolar | ies 7 | Desarrollado con 🩵 y 🤍</p>
+    </footer>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/3/turn.min.js"></script>
+    
+    <script src="album.js"></script>
+</body>
+</html>

@@ -6,10 +6,18 @@
     <title>Generador de Figuritas - La Scaloneta</title>
     <link rel="stylesheet" href="estilo.css">
     <link rel="icon" type="image/x-icon" href="https://upload.wikimedia.org/wikipedia/commons/a/a4/Sol_de_Mayo_Bandera_Argentina.png">
-    <script src="https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.3.0/dist/browser/index.js"></script>
+   
 </head>
 <body>
-
+<div id="pantallaCarga" class="loading-overlay">
+    <div class="loader-content">
+        <div class="pelota-animada">⚽</div>
+        <div class="barra-contenedor">
+            <div class="barra-progreso"></div>
+        </div>
+        <p>Preparando la cancha...</p>
+    </div>
+</div>
 <header class="school-header">
     <div class="logos">
         <div class="logo-ies">
@@ -44,13 +52,15 @@
             <div id="loadingMsg" class="loading" style="display: none;">🤖 Recortando el fondo... Por favor espera.</div>
 
             <form id="dataForm" class="data-form">
-                <input type="text" id="playerName" placeholder="NOMBRE APELLIDO (Ej: LIONEL MESSI)" required>
+                <input type="text" id="playerName" placeholder="NOMBRE" required>
+                <input type="text" id="playerSurname" placeholder="APELLIDO">
                 <div class="row">
                     <input type="text" id="playerDob" placeholder="Fecha Nac. (01-09-1997)">
                     <input type="text" id="playerHeight" placeholder="Altura (1,78 m)">
                     <input type="text" id="playerWeight" placeholder="Peso (67 kg)">
+                    
                 </div>
-                <input type="text" id="playerTeam" value="LA SCALONETA (ARG)" readonly>
+                <input type="text" id="playerTitle" placeholder="Título">
             </form>
         </section>
 
@@ -61,11 +71,12 @@
             <button class="btn-custom btn-download" id="downloadBtn" disabled>⬇️ Descargar Figurita</button>
         </section>
     </main>
-
+    <button class="btn-pildora" id="btnCompletarAlbum" onclick="window.location.href='album.html'">¡Completa el álbum!</button>
     <footer>
-        <p>© 2026 - Proyecto Escolar |ies 7 | Desarrollado con 🩵 y 🤍</p>
+        <p>© 2026 - Proyecto Escolar | ies 7 | Desarrollado con 🩵 y 🤍</p>
     </footer>
-
-    <script src="java.js"></script>
+    <script type="module" src="index.js"></script>
 </body>
+
+
 </html>
