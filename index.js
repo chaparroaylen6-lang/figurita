@@ -1,4 +1,3 @@
-
 import { removeBackground as imglyRemoveBackground } from "https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/+esm";
 
 // ==========================
@@ -15,6 +14,12 @@ const cameraBtn = document.getElementById("cameraBtn");
 const captureBtn = document.getElementById("captureBtn");
 const cameraStream = document.getElementById("cameraStream");
 const cameraContainer = document.getElementById("cameraContainer");
+
+// --- NUEVO: Referencias a manipulación ---
+const manipulationPanel = document.getElementById("imageManipulationPanel");
+const adjustX = document.getElementById("adjustX");
+const adjustY = document.getElementById("adjustY");
+const adjustScale = document.getElementById("adjustScale");
 
 
 window.addEventListener('load', () => { setTimeout(() => { document.getElementById('pantallaCarga').classList.add('ocultar-carga'); }, 2000); });
@@ -33,7 +38,7 @@ async function removeBackground(file) {
 }
 
 // ==========================
-// PLANTILLA
+// PLANTILLA Y ESTADO
 // ==========================
 
 const plantilla = new Image();
@@ -47,8 +52,15 @@ plantilla.onload = () => {
 let imagenActual = null;
 let currentCameraStream = null;
 
+// --- NUEVO: Estado Base de manipulación ---
+// Guardamos las dimensiones por defecto originales para basar el zoom
+const photoBaseState = {
+    baseWidth: 400, // Anchura por defecto original
+    baseHeight: 490 // Altura por defecto original
+};
+
 // ==========================
-// GENERAR FIGURITA
+// GENERAR FIGURITA (MODIFICADA TOTALMENTE)
 // ==========================
 
 async function generarFigurita(imagenProcesada = null) {
@@ -63,13 +75,24 @@ async function generarFigurita(imagenProcesada = null) {
     // 2. CAPA 1: DIBUJAR PLANTILLA (El fondo base)
     ctx.drawImage(plantilla, 0, 0, canvas.width, canvas.height);
 
-    // 3. CAPA 2: DIBUJAR FOTO RECORTADA (Encima del fondo)
+    // 3. CAPA 2: DIBUJAR FOTO RECORTADA (MODIFICADO CON MANIPULACION)
     if (imagenActual) {
         const foto = new Image();
         foto.src = imagenActual;
         await foto.decode();
-        // Coordenadas ajustadas para encajar sobre el 26 y no tapar la barra de datos
-        ctx.drawImage(foto, 25, 40, 400, 490);
+        
+        // --- NUEVA LOGICA DE MANIPULACION ---
+        // Leemos los valores actuales de los sliders directamente
+        const currentX = parseFloat(adjustX.value);
+        const currentY = parseFloat(adjustY.value);
+        const currentZoom = parseFloat(adjustScale.value);
+        
+        // Calculamos dimensiones finales basadas en el zoom actual
+        const finalWidth = photoBaseState.baseWidth * currentZoom;
+        const finalHeight = photoBaseState.baseHeight * currentZoom;
+        
+        // Dibujamos usando las variables dinámicas
+        ctx.drawImage(foto, currentX, currentY, finalWidth, finalHeight);
     }
 
     // 4. OBTENER TEXTOS
@@ -108,7 +131,7 @@ async function generarFigurita(imagenProcesada = null) {
 }
 
 // ==========================
-// SUBIR IMAGEN
+// SUBIR IMAGEN (MODIFICADO PARA MOSTRAR PANEL)
 // ==========================
 
 imageUpload.addEventListener("change", async (e) => {
@@ -119,6 +142,10 @@ imageUpload.addEventListener("change", async (e) => {
 
     try {
         const pngSinFondo = await removeBackground(file);
+        
+        // --- NUEVO: Mostramos el panel de manipulación ---
+        manipulationPanel.style.display = "block";
+
         await generarFigurita(pngSinFondo);
         downloadBtn.disabled = false;
     } catch (error) {
@@ -145,7 +172,7 @@ cameraBtn.addEventListener("click", async () => {
 });
 
 // ==========================
-// CAPTURA
+// CAPTURA (MODIFICADO PARA MOSTRAR PANEL)
 // ==========================
 
 captureBtn.addEventListener("click", async () => {
@@ -161,6 +188,10 @@ captureBtn.addEventListener("click", async () => {
         loadingMsg.style.display = "block";
 
         const pngSinFondo = await removeBackground(file);
+
+        // --- NUEVO: Mostramos el panel de manipulación ---
+        manipulationPanel.style.display = "block";
+
         await generarFigurita(pngSinFondo);
         downloadBtn.disabled = false;
 
@@ -193,8 +224,22 @@ downloadBtn.addEventListener("click", () => {
 // ==========================
 
 document.querySelectorAll("input").forEach(input => {
-    input.addEventListener("input", async () => {
-        // Ejecutamos la función de dibujo en cada letra que escribas
+    // Solo escuchamos a inputs que no sean de tipo range
+    if (input.type !== 'range') {
+        input.addEventListener("input", async () => {
+            // Ejecutamos la función de dibujo en cada letra que escribas
+            await generarFigurita();
+        });
+    }
+});
+
+// ==========================
+// ACTUALIZAR AL MANIPULAR IMAGEN (NUEVO TOTAL)
+// ==========================
+// Escuchamos a los tres sliders y redibujamos todo al moverlos
+[adjustX, adjustY, adjustScale].forEach(control => {
+    control.addEventListener("input", async () => {
+        // Redibujamos la figurita completa cada vez que movemos el slider
         await generarFigurita();
     });
 });

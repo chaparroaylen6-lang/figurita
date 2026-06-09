@@ -40,9 +40,9 @@ function decorarTextoEspecial(texto) {
     let textoDecorado = '';
     for (let i = 0; i < texto.length; i++) {
         textoDecorado += texto[i];
-        if (texto[i] === ' ') textoDecorado += '✨ ';
+        if (texto[i] === ' ') textoDecorado += '☆ ';
     }
-    return ` ${textoDecorado} ⭐`;
+    return ` ${textoDecorado} ✩`;
 }
 
 // --- Lógica de Modales ---
@@ -195,7 +195,7 @@ function inicializarLibro() {
         
         ${htmlPaginas}
         
-        <div class="hard cover-inside"></div>
+        
         <div class="hard cover" style="background-image: url('imagenes/contratapa.png'); background-size: cover; background-position: center; border-radius: 10px 0 0 10px; border: none;">
         </div>
     `;
