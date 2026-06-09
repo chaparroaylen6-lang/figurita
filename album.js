@@ -23,8 +23,8 @@ const figuritasDisponibles = [
 ];
   
 const rutasImagenes = {
-    1: "imagenes/js.png", 2: "imagenes/python.png", 3: "imagenes/java.png", 4: "imagenes/c.png", 5: "imagenes/c++.png",
-    6: "imagenes/c#.png", 7: "imagenes/go.png", 8: "imagenes/rust.png", 9: "imagenes/kotlin.png", 10: "imagenes/swift.png",
+    1: "imagenes/js.png", 2: "imagenes/python.png", 3: "imagenes/java.png", 4: "imagenes/c.png", 5: "imagenes/cmasmas.png",
+    6: "imagenes/chashtag.png", 7: "imagenes/go.png", 8: "imagenes/rust.png", 9: "imagenes/kotlin.png", 10: "imagenes/swift.png",
     11: "imagenes/ada.png", 12: "imagenes/linus.png", 13: "imagenes/dennis.png", 14: "imagenes/bjarne.png", 15: "imagenes/guido.png",
     16: "imagenes/james.png", 17: "imagenes/brendan.png", 18: "imagenes/anders.png", 19: "imagenes/grace.png", 20: "imagenes/ken.png"
 };
